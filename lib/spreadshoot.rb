@@ -85,6 +85,7 @@ class Spreadshoot
 
   # Saves the spreadsheet to an XLSX file with a given name
   def save filename
+    filename = File.absolute_path(filename)
     dir = File.join(File.dirname(filename), "spreadshoot-%06x/" % rand(256**3))
     FileUtils.rm_rf(dir)
     FileUtils.mkdir_p(dir)
@@ -115,11 +116,11 @@ class Spreadshoot
       f.write xl_rels
     end
 
-    filename = File.absolute_path(filename)
-    FileUtils.chdir(dir)
     File.delete(filename) if File.exists?(filename)
     # zip the result
-    puts `zip -r #{filename} ./`
+    FileUtils.chdir(dir) do
+      puts `zip -r "#{filename}" ./`
+    end
     FileUtils.rm_rf(dir)
   end
 
